@@ -16,15 +16,14 @@ func main() {
 	var (
 		listen   = flag.String("listen", ":8080", "HTTP listen")
 		interval = flag.Duration("interval", 1*time.Second, "broadcast interval")
-		timeout  = flag.Duration("timeout", 5*time.Second, "websocket connection timeout")
 	)
 	flag.Parse()
-	http.HandleFunc("/", handleSocket(newNumberStation(*interval), *timeout))
+	http.HandleFunc("/", handleSocket(newNumberStation(*interval)))
 	log.Printf("listening on %s", *listen)
 	log.Fatal(http.ListenAndServe(*listen, nil))
 }
 
-func handleSocket(s station, timeout time.Duration) http.HandlerFunc {
+func handleSocket(s station) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "GET" {
 			http.Error(w, "Method not allowed", 405)
@@ -39,7 +38,7 @@ func handleSocket(s station, timeout time.Duration) http.HandlerFunc {
 			return
 		}
 		s.Subscribe(conn)
-		wait(conn, timeout)
+		wait(conn)
 	}
 }
 
@@ -97,7 +96,7 @@ func send(conn *websocket.Conn, number int, unsub chan<- *websocket.Conn) {
 	}
 }
 
-func wait(conn *websocket.Conn, timeout time.Duration) {
+func wait(conn *websocket.Conn) {
 	defer conn.Close()
 	for {
 		if _, _, err := conn.ReadMessage(); err != nil {
