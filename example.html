@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<head>
+<title>Number Station Example</title>
+</head>
+<body>
+
+<code id="data"></code>
+
+<script type="text/javascript">
+    (function() {
+        var data = document.getElementById("data");
+        var conn = new WebSocket("ws://localhost:8080");
+        conn.onclose = function(evt) {
+            data.textContent += "\nEOT";
+        }
+        conn.onmessage = function(evt) {
+            data.textContent += " " + evt.data;
+        }
+    })();
+</script>
+</body>
+</html>
