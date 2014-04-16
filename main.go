@@ -6,7 +6,6 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
-	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
@@ -47,7 +46,6 @@ type station interface {
 }
 
 type numberStation struct {
-	sync.RWMutex
 	sub   chan *websocket.Conn
 	unsub chan *websocket.Conn
 }
